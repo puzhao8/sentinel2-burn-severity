@@ -55,31 +55,29 @@ RAND: # Rrproduce Results
 
 DATA:
     NAME: s1s2
-    DIR: /home/p/u/puzhao/wildfire-s1s2-dataset-us-tiles
+    data_dir: /home/p/u/puzhao/wildfire-s1s2-dataset-us-tiles/train
     # DIR: /cephyr/NOBACKUP/groups/snic2021-7-104/wildfire-s1s2-dataset-ak-tiles
     # DIR: /cephyr/NOBACKUP/groups/snic2021-7-104/wildfire-s1s2-dataset-ca-tiles
 
-    SATELLITES: ['S2']
-    PREPOST: ['pre', 'post']
-    STACKING: True # stack bi-temporal data
+    satellites: ['S2']
+    prepost: ['pre', 'post']
+    stacking: True # stack bi-temporal data
 
-    ALL_BANDS:
-        ALOS: ['ND', 'VH', 'VV']
-        S1: ['ND', 'VH', 'VV']
-        S2: ['B2', 'B3', 'B4', 'B8', 'B11', 'B12']
-
-    INPUT_BANDS:
+    input_bands:
         ALOS: ['ND', 'VH', 'VV']
         S1: ['ND', 'VH', 'VV']
         S2: ['B4', 'B8', 'B12'] #['B4', 'B8', 'B12']
         # S2: ['B3', 'B8', 'B12'] #['B4', 'B8', 'B12']
+    classes: ['unburn', 'low', 'moderate', 'high']
 
     # REF_MASK: poly
-    TRAIN_MASK: mtbs
-    TEST_MASK: mtbs
-    TRAIN_RATIO: 0.9
-    AUGMENT: False
-    NUM_WORKERS: 4
+    train_mask: mtbs
+    test_mask: mtbs
+    val_ratio: 0.1
+    test_ratio: 0.2
+    use_aug: False
+    num_workers: 4
+    batch_size: 16
 
 MODEL:
     DEBUG: True
@@ -91,7 +89,7 @@ MODEL:
     ACTIVATION: softmax2d  
 
     NUM_CLASS: 4
-    CLASS_NAMES: ['unburn', 'low', 'moderate', 'high'] #'greener', 'cloud'
+    CLASS_NAMES: ${DATA.classes} #'greener', 'cloud'
     CLASS_WEIGHTS: [0.25, 0.25, 0.25, 0.25]
 
     # NUM_CLASSES: 2
@@ -103,7 +101,7 @@ MODEL:
     ENCODER_WEIGHTS: imagenet
 
     MAX_EPOCH: 10
-    BATCH_SIZE: 16
+    BATCH_SIZE: ${DATA.batch_size}
 
     LEARNING_RATE: 1e-4
     WEIGHT_DECAY: 1e-2
@@ -129,7 +127,7 @@ EVAL:
 EXP:
     NOTE: debug
     FOLDER: MTBS_Burn_Severity
-    NAME: ${DATA.TRAIN_MASK}_${MODEL.ARCH}_${DATA.SATELLITES}_${EXP.NOTE}
+    NAME: ${DATA.train_mask}_${MODEL.ARCH}_${DATA.satellites}_${EXP.NOTE}
     OUTPUT: /home/p/u/puzhao/run_results/${EXP.FOLDER}/run_${EXP.NAME}_${now:%Y%m%dT%H%M%S} #${defaults.0.data}
 
 hydra:

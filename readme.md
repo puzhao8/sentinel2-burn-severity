@@ -2,7 +2,15 @@
 
 This project aims to estimate the amount of pixels in an image that belongs to forests given a satellite image.
 
-
+## Data
+Requirement for the data folder:
+```
+train
+    {satellite_name}
+        pre
+        post
+```
+where satellite_name can used to select datasets from different satellite, e.g., S1, S2
 
 ## Framework
 ![image](assets/framework.png)

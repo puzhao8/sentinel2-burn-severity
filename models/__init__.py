@@ -11,16 +11,16 @@ model_zoo = {
 def get_model(cfg):
 
     ########################### COMPUTE INPUT & OUTPUT CHANNELS ############################
-    print("Satellites: ", cfg.DATA.SATELLITES)
+    print("Satellites: ", cfg.DATA.satellites)
     print("num_classes:", cfg.MODEL.NUM_CLASS)
 
     # cfg.MODEL.NUM_CLASS = cfg.MODEL.cfg.MODEL.NUM_CLASS
 
     INPUT_CHANNELS_DICT = {}
     INPUT_CHANNELS_LIST = []
-    for sat in cfg.DATA.SATELLITES:
-        INPUT_CHANNELS_DICT[sat] = len(list(cfg.DATA.INPUT_BANDS[sat]))
-        if cfg.DATA.STACKING: INPUT_CHANNELS_DICT[sat] = len(cfg.DATA.PREPOST) * INPUT_CHANNELS_DICT[sat]
+    for sat in cfg.DATA.satellites:
+        INPUT_CHANNELS_DICT[sat] = len(list(cfg.DATA.input_bands[sat]))
+        if cfg.DATA.stacking: INPUT_CHANNELS_DICT[sat] = len(cfg.DATA.prepost) * INPUT_CHANNELS_DICT[sat]
         INPUT_CHANNELS_LIST.append(INPUT_CHANNELS_DICT[sat])
     
     ########################### MODEL SELECTION ############################

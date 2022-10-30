@@ -57,7 +57,7 @@ def main(CFG: DictConfig) -> None:
     # data_dir = Path(hydra.utils.get_original_cwd()) / CFG.DATASET.data_dir
     # CFG.DATASET.data_dir = str(data_dir)
 
-    data_module = PlDataset(CFG) #* fix dataset
+    data_module = PlDataset(seed=0, **CFG.DATA) #* fix dataset
 
     # input_dim = dataset.trainset[0][0].shape[0]
     # logger.info(f"input_dim: {input_dim}")

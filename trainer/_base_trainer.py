@@ -104,7 +104,7 @@ class PLModel(LightningModule):
             logger.info("[EMA] initial ")
 
     def training_step(self, batch, batch_idx=None):
-        if hasattr(self.dataset, 'aug_times'):
+        if self.dataset.use_aug:
             batch0, batch1 = batch
             x = torch.cat([batch0[0], batch1[0]])
             y = torch.cat([batch0[1], batch1[1]])
