@@ -9,7 +9,7 @@ import os, sys
 import torch
 from dataset.forest import train_test_val_split
 
-from trainer.summary import Summary
+from visualizer.summary import Summary
 from utils import flat_omegadict, set_random_seed
 
 

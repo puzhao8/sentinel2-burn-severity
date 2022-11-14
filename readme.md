@@ -38,6 +38,5 @@ python train.py --config-name config \
 
 [code](https://drive.google.com/file/d/1rPRh13gtYRcn-fhtLMxgKzr34zrLZw04/view?usp=sharing)
 
-
-
+[code explanation](https://doc.clickup.com/25741838/p/h/rhjge-1025/1bf7bf0ac425a92)
 

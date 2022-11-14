@@ -1,5 +1,8 @@
+'''helper functions used in main functions or in different files'''
+import io
 import os
 import random
+from typing import Any
 import torch
 import numpy as np
 import torch.backends.cudnn as cudnn
@@ -52,3 +55,20 @@ def set_random_seed(seed):
     pl.seed_everything(seed)
     cudnn.deterministic = True
     cudnn.benchmark = False
+
+
+def fig2html(fig) -> Any:
+    '''
+    write plotly figure to buffer to get html
+
+    Parameter
+    ----------
+    fig: plotly figure
+
+    Return
+    ---------
+    html that can be passed to wandb.Html(html)
+    '''
+    buffer = io.StringIO()
+    fig.write_html(buffer)
+    return buffer.getvalue()

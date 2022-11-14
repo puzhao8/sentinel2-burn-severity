@@ -10,8 +10,7 @@ from torch.nn import BCELoss
 from models import activation
 
 from utils import acc_topk, accuracy
-from utils.ema import EMA
-from utils.losses import RMSELoss
+from trainer.ema import EMA
 
 import torchmetrics as tm
 from torchmetrics import JaccardIndex
@@ -60,7 +59,7 @@ class PLModel(LightningModule):
         self.warmup = warmup
 
         self.criterion = get_criterion(loss_type='CrossEntropyLoss', class_weights=[0.25,0.25,0.25,0.25])
-        self.train_IoU = JaccardIndex(num_classes=4)
+        self.train_IoU = JaccardIndex(num_classes=4, average='none')
         self.val_IoU = JaccardIndex(num_classes=4)
         self.test_IoU = JaccardIndex(num_classes=4)
 
@@ -111,17 +110,21 @@ class PLModel(LightningModule):
         else:
             x, y = batch
 
+        y = y.squeeze().long()
         out = self.model.forward(x) #NCHW
-        loss = self.criterion(out[-1], y.squeeze().long())
+        loss = self.criterion(out[-1], y)
 
         y_pred = torch.argmax(self.model.activation(out[-1]), dim=1) # If use this, set IoU/F1 metrics activation=None
 
-        y = y.squeeze()
         mask = (y!=-1)
-        self.train_IoU(y_pred * mask, (y * mask).long())
+        y = y * mask
+        class_iou = self.train_IoU(y_pred * mask, y)
+        avg_iou = class_iou.mean()
 
         self.log('train_loss', loss, on_step=False, on_epoch=True)
-        self.log('train_IoU', self.train_IoU, on_step=False, on_epoch=True)
+        self.log('train_IoU', avg_iou, on_step=False, on_epoch=True)
+        for i, iou in enumerate(class_iou):
+            self.log(f'train_IoU.{i}', iou, on_step=False, on_epoch=True)
 
         return loss
 
@@ -137,19 +140,20 @@ class PLModel(LightningModule):
 
     def validation_step(self, batch, batch_idx=None):
         x, y, = batch
+        y = y.squeeze().long()
         out = self.model.forward(x) #NCHW
         loss = self.criterion(out[-1], y.squeeze().long())
 
         y_pred = torch.argmax(self.model.activation(out[-1]), dim=1) # If use this, set IoU/F1 metrics activation=None
         
-        y = y.squeeze()
         mask = (y!=-1)
-        self.val_IoU(y_pred * mask, (y * mask).long())
+        y = y * mask
+        self.val_IoU(y_pred * mask, y)
 
         self.log('val_loss', loss, on_step=False, on_epoch=True)
         self.log('val_IoU', self.val_IoU, on_step=False, on_epoch=True)
 
-        return loss
+        return y_pred.cpu(), y.cpu()
 
     def validation_epoch_end(self, *args, **kwargs):
         if self.EMA:
@@ -157,16 +161,17 @@ class PLModel(LightningModule):
 
     def test_step(self, batch, batch_idx=None):
         x, y, = batch
+        y = y.squeeze().long()
         out = self.model.forward(x) # NCHW
-        loss = self.criterion(out[-1], y.squeeze().long())
+        loss = self.criterion(out[-1], y)
 
         y_pred = torch.argmax(self.model.activation(out[-1]), dim=1) # If use this, set IoU/F1 metrics activation=None
         
-        y = y.squeeze()
         mask = (y!=-1)
-        self.test_IoU(y_pred * mask, (y * mask).long())
+        y = y * mask
+        self.test_IoU(y_pred * mask, y)
 
         self.log('test_loss', loss, on_step=False, on_epoch=True)
         self.log('test_IoU', self.test_IoU, on_step=False, on_epoch=True)
 
-        return loss
+        return y_pred.cpu(), y.cpu()

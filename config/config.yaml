@@ -10,6 +10,7 @@ wandb_project: test
 run_name: test
 log_artifact_every: #int or list of int, if -1, log the last epoch
 log_weight_every: 
+log_cfmatrix_every:
 
 seed: 0
 use_gpu: True

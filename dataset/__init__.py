@@ -21,6 +21,7 @@ class PlDataset(LightningDataModule):
                  test_ratio: float = 0.2,
                  batch_size: int = 32,
                  num_workers: int = 4,
+                 drop_last: boolean = False,
                  seed: int = 0,
                  use_aug: boolean=True,
                  train_mask: str='mtbs',
@@ -41,6 +42,8 @@ class PlDataset(LightningDataModule):
         self.use_aug = use_aug
         self.batch_size = batch_size
         self.num_workers = num_workers
+        self.drop_last = drop_last
+        self.classes = Dataset.CLASSES
         train_files, val_files, test_files = Dataset.train_test_val_split(
             data_dir, test_ratio, val_ratio, seed)
         data_dir = Path(data_dir)
@@ -78,7 +81,7 @@ class PlDataset(LightningDataModule):
                           batch_size=self.batch_size,
                           num_workers=self.num_workers,
                           pin_memory=False,
-                          drop_last=True)
+                          drop_last=self.drop_last)
 
 
     def test_dataloader(self):
@@ -86,5 +89,5 @@ class PlDataset(LightningDataModule):
                           batch_size=self.batch_size,
                           num_workers=self.num_workers,
                           pin_memory=False,
-                          drop_last=False)
+                          drop_last=self.drop_last)
 

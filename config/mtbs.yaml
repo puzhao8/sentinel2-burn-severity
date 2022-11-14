@@ -15,6 +15,10 @@ use_gpu: True
 debug: False # if debug, don't save checkpoints
 CUDA_VISIBLE_DEVICES: # for local test runs
 early_stop: False
+log_cfmatrix_every: 1
+save_model_top_k: # int
+save_model_every: # int
+save_model_last: # boolean
 
 DATASET:
     name: MTBS
