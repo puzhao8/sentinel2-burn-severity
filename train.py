@@ -86,8 +86,6 @@ def main(CFG: DictConfig) -> None:
         mode='max',
     )
 
-
-
     lr_monitor = LearningRateMonitor(logging_interval='step')
     callbacks = [lr_monitor, checkpoint_callback]
 

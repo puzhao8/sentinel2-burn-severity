@@ -27,7 +27,8 @@ DATASET:
     use_aug: False
     flip_p: 0.2
     aug_times: 1
-      # data loader
+    
+    # data loader
     n_val: 0.1
     n_test: 0.2
     batch_size: 16
